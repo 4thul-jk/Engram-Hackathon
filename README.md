@@ -47,7 +47,7 @@ Copy `engram-retrieval/.env.example` to `.env` inside that folder to configure A
 
 ## Current boundaries
 
-Local mode is **in memory**, resets on restart, and uses **keyword matching only**. It does not simulate live Atlas Search, Vector Search, Voyage or Stream Processing. Those adapters/templates still need a live integration test with your own credentials. Automated Embedding is a preview feature according to MongoDB documentation.
+Local mode is **in memory**, resets on restart, and uses **keyword matching only**. It does not simulate live Atlas Search, Vector Search, Voyage or Stream Processing. Those adapters/templates still need a live integration test with your own credentials. Automated Embedding is generally available on Atlas (MongoDB announcement: 12 August 2026); self-managed availability differs. Native reranking has separate version, enablement and release-status requirements.
 
 This component does not implement Gemini media encoding, WhatsApp, medication decisions, emergency monitoring, continuous recording, the full caregiver console, or a clinically validated memory model. The supplied dashboard is a developer test interface. Data and event examples are fictional. Citation integrity is not proof that a generated claim is factually supported.
 

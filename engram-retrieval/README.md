@@ -36,7 +36,7 @@ Default timezone is `Europe/London` for the event. Quiet hours are 22:00-07:00 i
 1. Run `npm install` (only runtime dependency: the MongoDB Node driver).
 2. Copy `.env.example` to `.env`. Never commit `.env`.
 3. Set `STORE=mongodb`, `MONGODB_URI`, database, strong distinct tokens, household and subject IDs. Point to a dedicated hackathon database; do not use real patient records.
-4. Choose `EMBEDDING_MODE=auto` for preview Automated Embedding. Confirm your Atlas deployment supports it. `VOYAGE_EMBED_MODEL=voyage-4` is configurable. This integration requests an `autoEmbed` field on `searchText` and sends query text rather than a query vector.
+4. Choose `EMBEDDING_MODE=auto` for Atlas Automated Embedding (generally available on Atlas since 12 August 2026). Confirm your Atlas deployment supports it. `VOYAGE_EMBED_MODEL=voyage-4` is configurable. This integration requests an `autoEmbed` field on `searchText` and sends query text rather than a query vector.
 5. Run `npm run atlas:indexes`. It creates ordinary indexes and requests text/vector indexes. Wait in Atlas until search indexes are ready/queryable; embedding generation is asynchronous. The script does not replace existing search definitions.
 6. Set `CONFIRM_DEMO_SEED=yes` in your terminal and run `npm run demo:seed` if you want fictional fixtures in Atlas. Otherwise your ingestion teammate calls the caregiver endpoints below.
 7. Run `npm start`. In Atlas mode the demo page seed button is disabled server-side; seeding is an explicit CLI operation.
@@ -190,7 +190,7 @@ Change streams/stream ingestion do not replace the server clock scheduler. TTL d
 
 Run `npm test`. Tests use Node's built-in runner, fictional data and an actual loopback HTTP server. No Atlas credentials, provider calls or real patient data are used. If your development sandbox blocks loopback connections, run the suite in your normal terminal.
 
-Atlas/Search/Automated Embedding/Voyage/Stream Processing need live credentials and an integration smoke test before claiming them in the demo. The local passing tests check adapter shapes and error paths, not successful provider execution. Automated Embedding is documented as preview and unsuitable for production. There is no continuous recording, face recognition, clinical memory assessment, medical advice, background geofencing, or emergency monitoring. No media upload/expiry pipeline is supplied: the ingestion teammate owns private original media and should extend source references accordingly. Access tokens, audit retention, key rotation, patient consent and production identity integration need a deployment review before handling personal data.
+Atlas/Search/Automated Embedding/Voyage/Stream Processing need live credentials and an integration smoke test before claiming them in the demo. The local passing tests check adapter shapes and error paths, not successful provider execution. Atlas Automated Embedding is generally available; the self-managed preview warning must not be applied to Atlas. Native reranking has its own release status and enablement requirements. There is no continuous recording, face recognition, clinical memory assessment, medical advice, background geofencing, or emergency monitoring. No media upload/expiry pipeline is supplied: the ingestion teammate owns private original media and should extend source references accordingly. Access tokens, audit retention, key rotation, patient consent and production identity integration need a deployment review before handling personal data.
 
 ## Official references used
 
@@ -202,3 +202,13 @@ Atlas/Search/Automated Embedding/Voyage/Stream Processing need live credentials 
 - [Stream Processing](https://www.mongodb.com/docs/atlas/atlas-stream-processing/)
 - [Stream lookup](https://www.mongodb.com/docs/atlas/atlas-stream-processing/sp-agg-lookup/)
 - [Stream merge](https://www.mongodb.com/docs/atlas/atlas-stream-processing/sp-agg-merge/)
+
+## Sponsor-feedback clarification (24 October 2026)
+
+MongoDB's [Atlas GA announcement](https://www.mongodb.com/products/updates/now-ga-automated-embedding-in-atlas-vector-search/) supersedes this README's earlier blanket preview warning. General overview text mixes deployment-specific notes; distinguish Atlas from self-managed deployments.
+
+The current implementation deliberately remains application-side reciprocal rank fusion plus optional external Voyage reranking. It does not claim native `$rankFusion` or `$rerank`. The individual text/vector pipelines contain `$project`, which is valid for those standalone queries; those stages must be removed from fusion sub-pipelines if implementing native fusion.
+
+For a native path, first verify the actual cluster version and enablement: `$rankFusion` requires 8.0+, and native `$rerank` requires Atlas 8.3+ with Native Reranking enabled. Construct separate filtered text/vector branches under fusion, append reranking, then projection. See [native reranking](https://www.mongodb.com/docs/vector-search/query/aggregation-stages/rerank/) and [hybrid search](https://www.mongodb.com/docs/vector-search/hybrid-search/hybrid-search-overview/). Do not replace the tested fallback or claim this path works until tested against the team's cluster.
+
+There are no direct Gemini SDK calls in this component: generation is supplied by the teammate's backend. The `top_k` argument in `src/search.js` is a Voyage reranking parameter, not a Gemini generation setting. UTC storage and timezone-aware day boundaries are already implemented; the tests include London's 25-hour day on 25 October 2026.
