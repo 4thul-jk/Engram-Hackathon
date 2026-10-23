@@ -21,6 +21,7 @@ Open http://127.0.0.1:4317, enter `local-admin-change-me`, connect, then add fic
 - Team-facing `POST /episodes`, `POST /episodes/review`, and `POST /retrieve` endpoints using `patient_id`.
 - Original-source references, caregiver review, idempotent ingestion and a citation-integrity helper for the team's Gemini backend.
 - Atlas index setup and a Stream Processing pipeline template.
+- Experimental stability updates, idempotent practice logs and daily rehearsal lists capped at three memories.
 - A developer dashboard, synthetic fixtures and automated tests.
 
 ## Test
@@ -32,12 +33,13 @@ npm test
 npm run demo:contract
 ```
 
-The latest local verification passed **36 tests**. The contract demo checks ingestion, draft exclusion, caregiver approval, retrieval, and duplicate prevention.
+The latest local verification passed **50 tests**. The contract demo checks ingestion, draft exclusion, caregiver approval, retrieval, and duplicate prevention. `npm run demo:memory` exercises the experimental practice loop against a fresh running local server.
 
 ## Connect the team
 
 - [Complete setup, configuration and existing trigger APIs](engram-retrieval/README.md)
 - [Team API contract and example JSON](engram-retrieval/TEAM-HANDOFF.md)
+- [Memory model and daily practice handoff](engram-retrieval/MEMORY-MODEL.md)
 - [Gemini backend integration example](engram-retrieval/examples/team-backend.js)
 - [Atlas Stream Processing template](engram-retrieval/atlas/context-pipeline.json)
 

@@ -5,7 +5,7 @@ if (cfg.mode !== "mongodb") throw new Error("Set STORE=mongodb and MONGODB_URI f
 const store = await createStore(cfg);
 try {
   const db = store.db;
-  for (const name of ["episodes", "sources", "people", "plans", "prompt_jobs", "prompts", "context_events", "assistance_candidates", "audit_events"]) {
+  for (const name of ["episodes", "sources", "people", "plans", "prompt_jobs", "prompts", "context_events", "assistance_candidates", "audit_events", "memory_state", "recall_attempts", "rehearsal_sets", "practice_slots"]) {
     if (!(await db.listCollections({ name }).toArray()).length) await db.createCollection(name);
   }
   await db.collection("plans").createIndex({ householdId: 1, subjectId: 1, eventStatus: 1, eventStart: 1 });
@@ -15,6 +15,10 @@ try {
   await db.collection("prompts").createIndex({ householdId: 1, subjectId: 1, dedupeKey: 1 }, { unique: true });
   await db.collection("prompts").createIndex({ householdId: 1, subjectId: 1, status: 1, availableAt: 1 });
   await db.collection("assistance_candidates").createIndex({ householdId: 1, subjectId: 1, status: 1 });
+  await db.collection("memory_state").createIndex({ householdId: 1, subjectId: 1, nextDueAt: 1 });
+  await db.collection("recall_attempts").createIndex({ householdId: 1, subjectId: 1, episodeId: 1, recordedAt: -1 });
+  await db.collection("rehearsal_sets").createIndex({ householdId: 1, subjectId: 1, day: 1 }, { unique: true });
+  await db.collection("practice_slots").createIndex({ householdId: 1, subjectId: 1, day: 1, episodeId: 1 }, { unique: true });
   const episodes = db.collection("episodes");
   const existing = await episodes.listSearchIndexes().toArray();
   const filters = ["householdId", "subjectId", "reviewStatus", "isCurrent", "eventStart", "personIds"];

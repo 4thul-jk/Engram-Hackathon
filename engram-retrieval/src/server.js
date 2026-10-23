@@ -8,6 +8,7 @@ import { EngramService } from "./service.js";
 import { ApiError } from "./validation.js";
 import { seedDemo } from "./fixtures.js";
 import { TeamContract } from "./team-contract.js";
+import { RehearsalService } from "./rehearsal.js";
 
 function equal(a, b) {
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -28,6 +29,7 @@ async function body(req) {
 }
 export function makeServer(service, cfg) {
   const team = new TeamContract(service);
+  const rehearsal = new RehearsalService(service);
   return createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "no-store");
@@ -66,6 +68,10 @@ export function makeServer(service, cfg) {
       let result, status = 200;
       const route = `${req.method} ${url.pathname}`;
       switch (route) {
+        case "POST /admin/rehearsals/generate": result = await rehearsal.generate(input); break;
+        case "GET /rehearsals": result = await rehearsal.getSet(input); break;
+        case "GET /memory-state": result = await rehearsal.readState(input); break;
+        case "POST /recall-attempts": result = await rehearsal.attempt(input); break;
         case "POST /episodes": result = await team.ingest(input); status = result.created ? 201 : 200; break;
         case "POST /episodes/review": result = await team.review(input); break;
         case "POST /retrieve": result = await team.retrieve(input); break;

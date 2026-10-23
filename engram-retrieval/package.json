@@ -10,7 +10,9 @@
     "test": "node --test",
     "atlas:indexes": "node scripts/indexes.js",
     "demo:seed": "node scripts/seed.js",
-    "demo:contract": "node scripts/contract-demo.js"
+    "demo:contract": "node scripts/contract-demo.js",
+    "memory:nightly": "node scripts/nightly.js",
+    "demo:memory": "node scripts/memory-demo.js"
   },
   "dependencies": { "mongodb": "^6.20.0" }
 }
