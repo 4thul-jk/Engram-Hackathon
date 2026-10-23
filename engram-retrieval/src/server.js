@@ -11,6 +11,7 @@ import { TeamContract } from "./team-contract.js";
 import { RehearsalService } from "./rehearsal.js";
 import { AnswerService } from "./answer.js";
 import { TriggerContract } from "./trigger-contract.js";
+import { AssistanceService } from "./assistance.js";
 
 function equal(a, b) {
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -34,6 +35,7 @@ export function makeServer(service, cfg) {
   const rehearsal = new RehearsalService(service);
   const answers = new AnswerService(service, cfg);
   const triggers = new TriggerContract(service);
+  const assistance = new AssistanceService(service);
   return createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "no-store");
@@ -72,6 +74,12 @@ export function makeServer(service, cfg) {
       let result, status = 200;
       const route = `${req.method} ${url.pathname}`;
       switch (route) {
+        case "POST /admin/devices": result = await assistance.register(input); status = 201; break;
+        case "POST /device-events": result = await assistance.telemetry(input); status = 202; break;
+        case "GET /device-status": result = await assistance.status(input); break;
+        case "POST /assistance/request": result = await assistance.request(input); status = result.created ? 201 : 200; break;
+        case "GET /admin/assistance": result = await assistance.queue(input); break;
+        case "POST /admin/assistance/acknowledge": result = await assistance.acknowledge(input); break;
         case "POST /plans": result = await triggers.create(input); status = 201; break;
         case "POST /plans/cancel": result = await triggers.cancel(input); break;
         case "POST /context-events": result = await triggers.context(input); status = 202; break;

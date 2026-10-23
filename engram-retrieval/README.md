@@ -2,6 +2,8 @@
 
 Your standalone component for MongoDB memory retrieval, evidence delivery to the team's Gemini backend, and rule-based proactive prompts. Node.js 20.18+; JavaScript ES modules.
 
+**Device assistance:** [DEVICE-ASSISTANCE.md](DEVICE-ASSISTANCE.md) describes registered devices, timestamped telemetry and a guardian review queue. Tracking and external notifications require separate integrations.
+
 **Website connection:** [WEBSITE-INTEGRATION.md](WEBSITE-INTEGRATION.md) covers the server-side client and reminder forwarding example. No Gemini credentials are needed for retrieval and prompts.
 
 **Gemini integration:** [GEMINI-BRIDGE.md](GEMINI-BRIDGE.md) documents `POST /api/answer`, backend key setup, citation validation and website handoff. Provider tests are mocked until a private Gemini key is configured.

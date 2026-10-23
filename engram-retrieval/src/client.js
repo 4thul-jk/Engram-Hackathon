@@ -48,6 +48,15 @@ export class EngramClient {
   cancelPlan(planId, signal) {
     return this.request("/plans/cancel", { patient_id: this.patientId, plan_id: planId }, signal);
   }
+  reportDevice(event, signal) {
+    return this.request("/device-events", { ...event, patient_id: this.patientId }, signal);
+  }
+  deviceStatus(signal) {
+    return this.request(`/device-status?patient_id=${encodeURIComponent(this.patientId)}`, undefined, signal);
+  }
+  requestHelp({ requestId, deviceId, reason = "user_requested_help" }, signal) {
+    return this.request("/assistance/request", { patient_id: this.patientId, request_id: requestId, device_id: deviceId, reason }, signal);
+  }
   // Sequential polling avoids overlapping requests. Failures surface to the
   // caller rather than being mistaken for an empty prompt list.
   async *watchPrompts({ intervalMs = 3000, signal } = {}) {

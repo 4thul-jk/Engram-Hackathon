@@ -73,6 +73,15 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### A1 — Device telemetry and assistance review
+
+- Checkpoint/time: Git metadata for the commit containing this entry. Previous checkpoint: `f222dc8`.
+- Added AssistanceService, authenticated endpoints and client methods for device registration, immutable scoped observations, latest-device freshness, explicit help requests and guardian acknowledgement. No actual tracking or external communication.
+- Added index provisioning for devices, device_observations and assistance_requests; not applied to live Atlas in this checkpoint.
+- Tests: 82 passed, including client-method mapping; controlled clock and local HTTP tests cover stale/unknown states, location validation, source attribution, idempotency, out-of-order observations, help acknowledgement and admin permissions. No live GPS, Atlas or calling test claimed.
+- Backtracking: revert this commit and restart; new collections can remain unused. Deleting location history requires an explicit separate retention decision.
+- Limitations: shared backend auth, no per-device credentials/revocation, no cross-ID rate control, no geofence detection, provider delivery or escalation; see DEVICE-ASSISTANCE.md.
+
 ### W1 — Website backend client
 
 - Checkpoint/time: Git metadata for the commit containing this entry (`npm run project:history`). Preceding checkpoint: `cd1de9c`.

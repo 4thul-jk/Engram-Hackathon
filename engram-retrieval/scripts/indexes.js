@@ -5,6 +5,12 @@ if (cfg.mode !== "mongodb") throw new Error("Set STORE=mongodb and MONGODB_URI f
 const store = await createStore(cfg);
 try {
   const db = store.db;
+  for (const name of ["devices", "device_observations", "assistance_requests"]) {
+    if (!(await db.listCollections({ name }).toArray()).length) await db.createCollection(name);
+  }
+  await db.collection("devices").createIndex({ householdId: 1, subjectId: 1, deviceId: 1 }, { unique: true });
+  await db.collection("device_observations").createIndex({ householdId: 1, subjectId: 1, deviceId: 1, observedAt: -1, receivedAt: -1 });
+  await db.collection("assistance_requests").createIndex({ householdId: 1, subjectId: 1, status: 1, createdAt: 1 });
   for (const name of ["episodes", "sources", "people", "plans", "prompt_jobs", "prompts", "context_events", "assistance_candidates", "audit_events", "memory_state", "recall_attempts", "rehearsal_sets", "practice_slots"]) {
     if (!(await db.listCollections({ name }).toArray()).length) await db.createCollection(name);
   }
