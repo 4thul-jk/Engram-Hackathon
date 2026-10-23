@@ -6,6 +6,8 @@ Your standalone component for MongoDB memory retrieval, evidence delivery to the
 
 **Memory scheduling:** [MEMORY-MODEL.md](MEMORY-MODEL.md) documents the experimental stability model, maximum-three daily review, practice attempts and nightly invocation. Run `npm run demo:memory` against a fresh local service to exercise the loop. This is a scheduling heuristic, not a clinical assessment.
 
+**Native Atlas retrieval:** [NATIVE-ATLAS.md](NATIVE-ATLAS.md) covers native fusion, optional native reranking, deployment/model checks and automatic fallback. Use `npm run atlas:check` for a live diagnostic once Atlas is configured.
+
 ## Run the local demo now
 
 ```powershell
@@ -21,7 +23,7 @@ Default timezone is `Europe/London` for the event. Quiet hours are 22:00-07:00 i
 
 ## What is implemented
 
-- Text, vector, and hybrid retrieval adapters for MongoDB Atlas. Hybrid combines separately executed text/vector queries with application-side reciprocal rank fusion, **not** native `$rankFusion`.
+- Text, vector, and hybrid retrieval adapters for MongoDB Atlas. Hybrid tries native `$rankFusion` and optional `$rerank`; standalone branches and application-side fusion remain an explicit fallback.
 - Atlas Automated Embedding index configuration, or manual Voyage embedding fallback. Optional Voyage reranking. Different key providers/geographies require matching API endpoints.
 - Canonical record reload after search, household/subject/date/approval filtering, source validation, structured no-record/degraded-service responses.
 - Exact upcoming-plan and person retrieval. Plans never enter the historical episode index.
@@ -207,8 +209,8 @@ Atlas/Search/Automated Embedding/Voyage/Stream Processing need live credentials 
 
 MongoDB's [Atlas GA announcement](https://www.mongodb.com/products/updates/now-ga-automated-embedding-in-atlas-vector-search/) supersedes this README's earlier blanket preview warning. General overview text mixes deployment-specific notes; distinguish Atlas from self-managed deployments.
 
-The current implementation deliberately remains application-side reciprocal rank fusion plus optional external Voyage reranking. It does not claim native `$rankFusion` or `$rerank`. The individual text/vector pipelines contain `$project`, which is valid for those standalone queries; those stages must be removed from fusion sub-pipelines if implementing native fusion.
+The implementation now includes native `$rankFusion` and optional `$rerank`, plus application-side fallback. Standalone text/vector queries use `$project`; native fusion branches omit it and apply projection after fusion/reranking. See NATIVE-ATLAS.md for feature reporting and live validation.
 
-For a native path, first verify the actual cluster version and enablement: `$rankFusion` requires 8.0+, and native `$rerank` requires Atlas 8.3+ with Native Reranking enabled. Construct separate filtered text/vector branches under fusion, append reranking, then projection. See [native reranking](https://www.mongodb.com/docs/vector-search/query/aggregation-stages/rerank/) and [hybrid search](https://www.mongodb.com/docs/vector-search/hybrid-search/hybrid-search-overview/). Do not replace the tested fallback or claim this path works until tested against the team's cluster.
+Verify the actual version, model and enablement. `$rankFusion` requires 8.0+. The earlier announcement describes reranking on 8.3 with `rerank-2.5`, but the current reranking reference lists 9.0+ and additional model restrictions. Native reranking therefore defaults OFF until a live diagnostic succeeds. Construct separate filtered text/vector branches under fusion, append reranking, then projection. See [native reranking](https://www.mongodb.com/docs/vector-search/query/aggregation-stages/rerank/) and [hybrid search](https://www.mongodb.com/docs/vector-search/hybrid-search/hybrid-search-overview/). Do not replace the tested fallback or claim this path works until tested against the team's cluster.
 
 There are no direct Gemini SDK calls in this component: generation is supplied by the teammate's backend. The `top_k` argument in `src/search.js` is a Voyage reranking parameter, not a Gemini generation setting. UTC storage and timezone-aware day boundaries are already implemented; the tests include London's 25-hour day on 25 October 2026.

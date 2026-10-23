@@ -33,12 +33,13 @@ npm test
 npm run demo:contract
 ```
 
-The latest local verification passed **50 tests**. The contract demo checks ingestion, draft exclusion, caregiver approval, retrieval, and duplicate prevention. `npm run demo:memory` exercises the experimental practice loop against a fresh running local server.
+The latest local verification passed **59 tests**. The contract demo checks ingestion, draft exclusion, caregiver approval, retrieval, and duplicate prevention. `npm run demo:memory` exercises the experimental practice loop against a fresh running local server.
 
 ## Connect the team
 
 - [Complete setup, configuration and existing trigger APIs](engram-retrieval/README.md)
 - [Team API contract and example JSON](engram-retrieval/TEAM-HANDOFF.md)
+- [Native Atlas retrieval setup](engram-retrieval/NATIVE-ATLAS.md)
 - [Memory model and daily practice handoff](engram-retrieval/MEMORY-MODEL.md)
 - [Gemini backend integration example](engram-retrieval/examples/team-backend.js)
 - [Atlas Stream Processing template](engram-retrieval/atlas/context-pipeline.json)

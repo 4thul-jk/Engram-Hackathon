@@ -79,12 +79,27 @@ export class EngramService {
     const options = { ...range(input), ...(input.personId ? { personId: id(input.personId) } : {}) };
     const mode = choice(input.mode || "hybrid", ["text", "vector", "hybrid"], "mode");
     const lists = {}, warnings = [], featuresUsed = [];
+    let nativeResult = null, retrievalIncomplete = false;
     if (this.store.mode === "memory") {
       if (mode === "vector") throw new ApiError(503, "Vector search requires Atlas; choose text or hybrid in local demo");
       lists.local = await this.store.search(scope, query, options, "text");
       featuresUsed.push("local_keyword_demo");
       warnings.push("Local keyword matching only. Atlas Search, vectors and reranking are NOT simulated.");
     } else {
+      if (mode === "hybrid" && this.cfg.hybridBackend === "native") {
+        try {
+          nativeResult = await this.store.nativeHybridSearch(scope, query, options);
+          if (!Array.isArray(nativeResult.docs)) throw new Error("Invalid native search response");
+          warnings.push(...nativeResult.warnings);
+          featuresUsed.push("atlas_search", "atlas_vector_search", "atlas_rank_fusion");
+          featuresUsed.push(this.cfg.embeddingMode === "auto" ? "atlas_automated_embedding_voyage" : "voyage_embeddings");
+          if (nativeResult.reranked) featuresUsed.push("atlas_native_rerank_voyage");
+        } catch {
+          nativeResult = null;
+          warnings.push("Native fusion failed; falling back to standalone search branches and application fusion.");
+        }
+      }
+      if (!nativeResult) {
       const methods = mode === "hybrid" ? ["text", "vector"] : [mode];
       const outcomes = await Promise.allSettled(methods.map(method => this.store.search(scope, query, options, method)));
       outcomes.forEach((outcome, index) => {
@@ -93,12 +108,18 @@ export class EngramService {
           lists[method] = outcome.value;
           featuresUsed.push(method === "text" ? "atlas_search" : "atlas_vector_search");
           if (method === "vector") featuresUsed.push(this.cfg.embeddingMode === "auto" ? "atlas_automated_embedding_voyage" : "voyage_embeddings");
-        } else warnings.push(`${method} retrieval unavailable; inspect server configuration/index readiness.`);
+        } else {
+          retrievalIncomplete = true;
+          warnings.push(`${method} retrieval unavailable; inspect server configuration/index readiness.`);
+        }
       });
       if (!Object.keys(lists).length) throw new ApiError(503, "Retrieval unavailable; this is not evidence that no memory exists");
       if (lists.text && lists.vector) featuresUsed.push("application_reciprocal_rank_fusion");
+      }
     }
-    let ranked = fuse(lists);
+    let ranked = nativeResult
+      ? nativeResult.docs.map(doc => ({ ...doc, methods: ["atlas_native_hybrid"] }))
+      : fuse(lists);
     // Reload canonical documents after search: search indexes can lag corrections.
     const canonical = [];
     for (const result of ranked) {
@@ -106,7 +127,7 @@ export class EngramService {
       if (doc) canonical.push({ ...doc, methods: result.methods, fusionScore: result.fusionScore });
     }
     ranked = canonical;
-    if (this.cfg.rerank && this.store.mode === "mongodb" && ranked.length) {
+    if (this.cfg.rerank && !nativeResult?.reranked && this.store.mode === "mongodb" && ranked.length) {
       try { ranked = await rerank(this.cfg, query, ranked); featuresUsed.push("voyage_rerank"); }
       catch { warnings.push("Voyage reranking unavailable; returning fused candidates."); }
     }
@@ -124,11 +145,11 @@ export class EngramService {
         eventEnd: doc.eventEnd ?? null, place: doc.place ?? null, what: doc.what ?? null,
         confidence: doc.confidence ?? null, salience: doc.salience ?? null, mediaPtr: doc.mediaPtr ?? null });
     }
-    const degraded = warnings.some(w => w.includes("unavailable"));
+    const degraded = retrievalIncomplete;
     const status = evidence.length ? "candidates_found" : degraded ? "retrieval_incomplete" : "no_record";
     await this.audit(scope, "recall", null, { status, episodeIds: evidence.map(e => e.episodeId) });
     return {
-      status, evidence, featuresUsed, warnings,
+      status, evidence, featuresUsed, warnings, retrievalComplete: !retrievalIncomplete,
       fallback: evidence.length ? null : degraded
         ? "I couldn't check all saved records right now."
         : "I don't have a saved record matching that question.",

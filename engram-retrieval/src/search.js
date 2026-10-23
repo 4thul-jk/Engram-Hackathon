@@ -87,3 +87,23 @@ export async function vectorPipeline(cfg, scope, query, options) {
     { $project: { embedding: 0 } }
   ];
 }
+
+export async function nativeHybridPipeline(cfg, scope, query, options = {}, withRerank = cfg.nativeRerank) {
+  // Fusion branches must preserve documents. Projection belongs AFTER fusion/rerank.
+  const text = textPipeline(cfg, scope, query, options).filter(stage => !stage.$project);
+  const vector = (await vectorPipeline(cfg, scope, query, options)).filter(stage => !stage.$project);
+  const pipeline = [
+    { $rankFusion: {
+      input: { pipelines: { text, semantic: vector } },
+      combination: { weights: { text: 1, semantic: 1 } }, scoreDetails: true
+    } },
+    { $limit: 20 },
+    { $match: { ...episodeFilter(scope, options), searchText: { $type: "string" } } }
+  ];
+  if (withRerank) pipeline.push({ $rerank: {
+    query: { text: query }, path: "searchText", numDocsToRerank: 20,
+    model: cfg.nativeRerankModel || "rerank-2.5"
+  } });
+  pipeline.push({ $project: { embedding: 0 } });
+  return pipeline;
+}

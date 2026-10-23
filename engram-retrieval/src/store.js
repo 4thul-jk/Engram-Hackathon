@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { embed, textPipeline, vectorPipeline } from "./search.js";
+import { embed, textPipeline, vectorPipeline, nativeHybridPipeline } from "./search.js";
 
 const copy = value => structuredClone(value);
 function matches(doc, filter) {
@@ -91,6 +91,19 @@ export class MongoStore {
     const pipeline = method === "text" ? textPipeline(this.cfg, scope, query, options)
       : await vectorPipeline(this.cfg, scope, query, options);
     return this.db.collection("episodes").aggregate(pipeline, { maxTimeMS: 15000 }).toArray();
+  }
+  async nativeHybridSearch(scope, query, options) {
+    const collection = this.db.collection("episodes");
+    const pipeline = await nativeHybridPipeline(this.cfg, scope, query, options);
+    try {
+      return { docs: await collection.aggregate(pipeline, { maxTimeMS: 20000 }).toArray(), reranked: this.cfg.nativeRerank, warnings: [] };
+    } catch (error) {
+      if (!this.cfg.nativeRerank) throw error;
+      // Distinguish a failed optional reranker from a failed search. Retry just fusion.
+      const fallback = pipeline.filter(stage => !stage.$rerank);
+      return { docs: await collection.aggregate(fallback, { maxTimeMS: 20000 }).toArray(), reranked: false,
+        warnings: ["Native reranking failed; returned native fusion without reranking. Check Atlas enablement, model and deployment support."] };
+    }
   }
   async prepareEpisode(doc) {
     if (this.cfg.embeddingMode === "manual") return {

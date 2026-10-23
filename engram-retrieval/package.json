@@ -9,6 +9,7 @@
     "worker": "node src/worker.js",
     "test": "node --test",
     "atlas:indexes": "node scripts/indexes.js",
+    "atlas:check": "node scripts/atlas-check.js",
     "demo:seed": "node scripts/seed.js",
     "demo:contract": "node scripts/contract-demo.js",
     "memory:nightly": "node scripts/nightly.js",

@@ -16,11 +16,15 @@ export function config() {
   const contextProcessing = process.env.CONTEXT_PROCESSING || "local";
   if (!["auto", "manual"].includes(embeddingMode)) throw new Error("Invalid EMBEDDING_MODE");
   if (!["local", "atlas"].includes(contextProcessing)) throw new Error("Invalid CONTEXT_PROCESSING");
+  const hybridBackend = process.env.HYBRID_BACKEND || "native";
+  if (!["native", "application"].includes(hybridBackend)) throw new Error("Invalid HYBRID_BACKEND");
   const quietStart = process.env.QUIET_START || "22:00";
   const quietEnd = process.env.QUIET_END || "07:00";
   for (const time of [quietStart, quietEnd]) if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new Error("Invalid quiet hours");
   return {
-    mode, timezone, adminToken, companionToken, embeddingMode, contextProcessing,
+    mode, timezone, adminToken, companionToken, embeddingMode, contextProcessing, hybridBackend,
+    nativeRerank: process.env.NATIVE_RERANK === "true",
+    nativeRerankModel: process.env.NATIVE_RERANK_MODEL || "rerank-2.5",
     host: process.env.HOST || "127.0.0.1",
     port: integer("PORT", 4317, 1, 65535),
     householdId: process.env.HOUSEHOLD_ID || "demo-household",

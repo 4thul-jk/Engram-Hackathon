@@ -108,14 +108,14 @@ export class TeamContract {
     const evidence = result.evidence.filter(e => min === null || (e.confidence !== null && e.confidence >= min));
     return {
       patient_id: input.patient_id,
-      status: evidence.length ? "candidates_found" : result.warnings.some(w => w.includes("unavailable")) ? "retrieval_incomplete" : "no_record",
+      status: evidence.length ? "candidates_found" : !result.retrievalComplete ? "retrieval_incomplete" : "no_record",
       episodes: evidence.map(e => ({ id: e.episodeId, patient_id: input.patient_id,
         start: e.eventStart, end: e.eventEnd, place: e.place, people: e.personIds,
         what: e.what, gist: e.summary, salience: e.salience, confidence: e.confidence,
         status: "carer_verified", media_ptr: e.mediaPtr, source_ids: e.sources.map(s => s.id),
         evidence: e.sources.map(s => ({ id: s.id, text: s.content, source_type: s.sourceType,
           media_ptr: s.mediaPtr ?? null, inspection_required: s.inspectionRequired })) })),
-      warnings: result.warnings, features_used: result.featuresUsed,
+      warnings: result.warnings, features_used: result.featuresUsed, retrieval_complete: result.retrievalComplete,
       note: "Candidates are not verified answers. Confidence is supplied metadata, not calibrated truth or retrieval similarity. Media-only evidence requires inspection before claims."
     };
   }
