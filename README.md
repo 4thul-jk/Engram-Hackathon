@@ -38,6 +38,7 @@ The latest local verification passed **59 tests**. The contract demo checks inge
 ## Connect the team
 
 - [Build timeline and verified commit times](docs/PROJECT-HISTORY.md)
+- [Live Atlas verification results](docs/LIVE-ATLAS-VERIFICATION.md)
 - [How ingestion, retrieval, triggers and practice work](docs/PROCESS.md)
 - [Backtracking and recovery runbook](docs/BACKTRACKING.md)
 - [Complete setup, configuration and existing trigger APIs](engram-retrieval/README.md)
@@ -51,7 +52,7 @@ Copy `engram-retrieval/.env.example` to `.env` inside that folder to configure A
 
 ## Current boundaries
 
-Local mode is **in memory**, resets on restart, and uses **keyword matching only**. It does not simulate live Atlas Search, Vector Search, Voyage or Stream Processing. Those adapters/templates still need a live integration test with your own credentials. Automated Embedding is generally available on Atlas (MongoDB announcement: 12 August 2026); self-managed availability differs. Native reranking has separate version, enablement and release-status requirements.
+Local mode is **in memory**, resets on restart, and uses **keyword matching only**. Live Atlas text/vector search, native rank fusion and Automated Embedding were verified against MongoDB 8.0.34 with fictional records; see the linked verification report. Native reranking, external Voyage API reranking and Stream Processing remain unverified. Automated Embedding is generally available on Atlas (MongoDB announcement: 12 August 2026); self-managed availability differs. Native reranking has separate version, enablement and release-status requirements.
 
 This component does not implement Gemini media encoding, WhatsApp, medication decisions, emergency monitoring, continuous recording, the full caregiver console, or a clinically validated memory model. The supplied dashboard is a developer test interface. Data and event examples are fictional. Citation integrity is not proof that a generated claim is factually supported.
 

@@ -52,4 +52,4 @@ Set `HYBRID_BACKEND=application` to explicitly use the old path. Native is the c
 
 The pipeline reranks at most 20 candidates and returns up to five source-backed episodes after canonical checks. Inference and fallback retries add latency; benchmark against your actual cluster before a timed demo. Citation IDs and relevance scores do not prove a claim is true.
 
-The new tests inspect pipelines and exercise controlled provider failures. They do **not** verify execution against Atlas. No cluster credentials were supplied for live provider testing.
+The automated tests inspect pipelines and exercise controlled provider failures. A subsequent live test verified native fusion and Automated Embedding on MongoDB 8.0.34 with fictional source-backed records; see [the live report](../docs/LIVE-ATLAS-VERIFICATION.md). Native reranking remains disabled and unverified.

@@ -20,7 +20,7 @@ IST means Asia/Kolkata (UTC+05:30). London times below are BST (UTC+01:00) on **
 | H2 | [8a9ee92](https://github.com/4thul-jk/Engram-Hackathon/commit/8a9ee920bdb29f2e9f6dd0aeec6309805f64d882) | 00:53:44 | 20:23:44 | Experimental stability model, recall-attempt logging, capped rehearsal sets, nightly command | 50 tests passed; live memory demo and next-review generation passed |
 | H3 | [e3198b9](https://github.com/4thul-jk/Engram-Hackathon/commit/e3198b99dd917d754b2f9e04f5dbadba824091ee) | 00:56:28 | 20:26:28 | Corrected Atlas Automated Embedding release status; clarified native retrieval prerequisites | Documentation-only change; no new provider execution claimed |
 | H4 | [415b59d](https://github.com/4thul-jk/Engram-Hackathon/commit/415b59d372c03605fc1706eaa2a5147a68acc7fe) | 01:02:46 | 20:32:46 | Native fusion, optional native reranking, explicit fallback, completion flags, diagnostic command | 59 tests passed; native provider behavior mocked/inspected, not live Atlas tested |
-| H5 | Commit containing this ledger | Read from Git | Read from Git | Project history, executable process guide, backtracking runbook and history-report command | History command and local documentation links checked; runtime behavior unchanged |
+| H5 | [4afcc3b](https://github.com/4thul-jk/Engram-Hackathon/commit/4afcc3b) | 01:13:15 | 20:43:15 | Project history, executable process guide, backtracking runbook and history-report command | History command and local documentation links checked; runtime behavior unchanged |
 
 To obtain exact author and committer times for H5 and later commits, run `npm run project:history` inside the component. The command reads live Git history; it avoids a hardcoded timestamp that would become inaccurate when the documentation is committed.
 
@@ -46,6 +46,8 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Decisions and their consequences
 
+**Subsequent live milestone:** on 24 October 2026 at 03:41:20.542 IST (23 October at 23:11:20.542 London), final runtime checks passed against Atlas. Both search indexes were ready; native fusion and automated embeddings retrieved an approved fictional record. Actual server version was 8.0.34. See [LIVE-ATLAS-VERIFICATION.md](LIVE-ATLAS-VERIFICATION.md) for the ordered setup/testing steps and their limits. This is a runtime timestamp, not a source-authoring timestamp.
+
 | Decision | Introduced | Why | What to revisit |
 |---|---|---|---|
 | Local keyword mode is explicit | H1 | Permit integration without external credentials without pretending vectors run | Validate Atlas separately before a sponsor demo |
@@ -65,7 +67,7 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 **Covered by automated tests:** formula branches, timezone/DST boundaries, scope and approval checks, missing evidence, duplicate submissions, cancellation, snooze, job leases, practice caps/recovery and native pipeline/fallback construction.
 
-**Not yet verified live:** Atlas connection, text/vector indexes, Automated Embedding execution, native fusion/reranking execution, external Voyage execution and Stream Processing workspace. The team reported an Atlas version of 8.3 or later; the actual server version has not been read using credentials here.
+**Live verification update:** Atlas connection, text/vector indexes, Automated Embedding and native fusion subsequently passed the fictional-record checks in [LIVE-ATLAS-VERIFICATION.md](LIVE-ATLAS-VERIFICATION.md). The server reported 8.0.34. Native reranking, external Voyage API reranking and Stream Processing are still not verified. The earlier 8.3-or-later report was not confirmed for this connection.
 
 **Outside implemented scope:** capture/encoding with Gemini, face identity, full graph expansion, hot-caption buffer, WhatsApp/Saint workflow, medication/escalation engines, full caregiver console, media retention/deletion and clinical benefit. Native reranking tests do not replace a provider smoke test.
 
