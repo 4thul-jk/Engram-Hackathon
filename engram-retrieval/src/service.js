@@ -218,8 +218,12 @@ export class EngramService {
       placeId: id(input.placeId, "placeId"), observedAt, receivedAt: this.clock()
     };
     const created = await this.store.insert("context_events", event);
+      const saved = await this.store.one("context_events", scoped(scope, event._id));
+      if (!saved || saved.placeId !== event.placeId || +saved.observedAt !== +event.observedAt) throw new ApiError(409, "Context event ID reused with different content or scope");
     // Duplicate event retries do not fabricate a new observation.
-    if (created && this.cfg.contextProcessing === "local") await this.store.insert("assistance_candidates", { ...event, status: "pending" });
+      // Also repair a crash between saving the observation and its candidate.
+      // insert is idempotent and never resets an already processed candidate.
+      if (this.cfg.contextProcessing === "local") await this.store.insert("assistance_candidates", { ...saved, status: "pending" });
     return { accepted: true, duplicate: !created, processing: this.cfg.contextProcessing };
   }
   async ensureJob(plan, contextEventId = null) {

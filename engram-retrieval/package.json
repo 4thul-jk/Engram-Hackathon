@@ -10,6 +10,7 @@
     "start": "node src/server.js",
     "worker": "node src/worker.js",
     "test": "node --test",
+    "verify:core": "node scripts/verify-core.js",
     "atlas:indexes": "node scripts/indexes.js",
     "atlas:check": "node scripts/atlas-check.js",
     "demo:seed": "node scripts/seed.js",

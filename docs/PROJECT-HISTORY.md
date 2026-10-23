@@ -73,6 +73,14 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### C1 — Assigned scope completion: retrieval and triggers
+
+- Verified 2026-10-23T22:51:19.065Z. Previous checkpoint: `3df312d`; exact commit time available through project:history.
+- Parked device/guardian/demo development. Fixed context-event retry recovery after interrupted candidate creation; changed event contents now conflict instead of being silently accepted.
+- Added verify:core with unique fictional household, controlled clock and explicit Atlas opt-in. 83 tests passed; all 9 core acceptance checks passed locally and on live Atlas. Live run `verify_97d774067aa847e69d5268a6415c3dac` retained for review.
+- Live features: Atlas Search, Vector Search, native rank fusion, automated Voyage embedding. Quiet hours disabled only in verifier; no real-time or clinical claim. Details and scope boundaries: YOUR-PART-COMPLETE.md.
+- No production configuration change or destructive migration. HTTP checked locally; new live workflow invokes services directly against MongoDB. Team website/audio connection remains external integration work.
+
 ### A1 — Device telemetry and assistance review
 
 - Checkpoint/time: Git metadata for the commit containing this entry. Previous checkpoint: `f222dc8`.

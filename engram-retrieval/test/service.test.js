@@ -26,6 +26,23 @@ test("scheduled job produces one prompt without a user question", async () => {
   assert.equal(prompts.length, 1); assert.match(prompts[0].message, /scheduled to visit/);
   assert.equal((await f.store.list("prompt_jobs"))[0].status, "completed");
 });
+
+test("context retries reject changed content and repair an interrupted candidate write", async () => {
+  const f = fixture();
+  const event = { subjectId: "margaret", eventId: "repair", placeId: "desk", observedAt: f.now().toISOString() };
+  const insert = f.store.insert.bind(f.store); let fail = true;
+  f.store.insert = async (name, doc) => {
+    if (name === "assistance_candidates" && fail) { fail = false; throw Error("interrupted write"); }
+    return insert(name, doc);
+  };
+  await assert.rejects(f.service.context(event));
+  assert.equal((await f.service.context(event)).duplicate, true);
+  assert.equal((await f.store.list("assistance_candidates")).length, 1);
+  await assert.rejects(f.service.context({ ...event, placeId: "kitchen" }), e => e.status === 409);
+  await f.store.update("assistance_candidates", { _id: "repair" }, { status: "processed" });
+  await f.service.context(event);
+  assert.equal((await f.store.one("assistance_candidates", { _id: "repair" })).status, "processed");
+});
 test("worker restart reconciliation does not lose a saved plan", async () => {
   const f = fixture(); await visit(f);
   assert.equal((await f.store.list("prompt_jobs")).length, 0);
