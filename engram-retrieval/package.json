@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20.18" },
+  "engines": {
+    "node": ">=20.18"
+  },
   "scripts": {
     "start": "node src/server.js",
     "worker": "node src/worker.js",
@@ -16,5 +18,8 @@
     "demo:memory": "node scripts/memory-demo.js",
     "project:history": "node scripts/history.js"
   },
-  "dependencies": { "mongodb": "^6.20.0" }
+  "dependencies": {
+    "@google/genai": "^2.3.0",
+    "mongodb": "^6.20.0"
+  }
 }

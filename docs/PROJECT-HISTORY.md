@@ -73,6 +73,15 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### G1 — Gemini answer bridge
+
+- Recorded at 2026-10-23T22:17:17Z (24 October 03:47:17 IST; 23 October 23:17:17 London). Checkpoint: the commit containing this entry.
+- Added `POST /api/answer`, official Gemini SDK, configurable model, structured claims, explicit abstention and original text evidence filtering. Rechecks retrieval after generation to catch withdrawn approval.
+- Handoff and flow diagram: [GEMINI-BRIDGE.md](../engram-retrieval/GEMINI-BRIDGE.md). Existing `/api/recall` remains available for a teammate-owned model call.
+- Validation: `npm test`: 67 passed, including eight new bridge tests with an injected provider. SDK exposes Interactions locally. No live Gemini request was made; API key was absent at implementation time.
+- Limitation: valid citations do not prove semantic entailment. Model access, actual provider response and live latency require a private key and live smoke test.
+- Backtrack to `cb9ad78` for the preceding Atlas-verified checkpoint. No database migration or new collections in this step.
+
 For each meaningful change, add a ledger entry using this template, then commit code and documentation together:
 
 ```text

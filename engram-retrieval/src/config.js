@@ -23,6 +23,8 @@ export function config() {
   for (const time of [quietStart, quietEnd]) if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new Error("Invalid quiet hours");
   return {
     mode, timezone, adminToken, companionToken, embeddingMode, contextProcessing, hybridBackend,
+    geminiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY,
+    geminiModel: process.env.GEMINI_MODEL || "gemini-4-argon",
     nativeRerank: process.env.NATIVE_RERANK === "true",
     nativeRerankModel: process.env.NATIVE_RERANK_MODEL || "rerank-2.5",
     host: process.env.HOST || "127.0.0.1",
