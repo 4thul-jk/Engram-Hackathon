@@ -10,6 +10,7 @@ import { seedDemo } from "./fixtures.js";
 import { TeamContract } from "./team-contract.js";
 import { RehearsalService } from "./rehearsal.js";
 import { AnswerService } from "./answer.js";
+import { TriggerContract } from "./trigger-contract.js";
 
 function equal(a, b) {
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -32,6 +33,7 @@ export function makeServer(service, cfg) {
   const team = new TeamContract(service);
   const rehearsal = new RehearsalService(service);
   const answers = new AnswerService(service, cfg);
+  const triggers = new TriggerContract(service);
   return createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "no-store");
@@ -65,11 +67,16 @@ export function makeServer(service, cfg) {
       const token = (req.headers.authorization || "").replace(/^Bearer /, "");
       const admin = equal(token, cfg.adminToken);
       if (!admin && !equal(token, cfg.companionToken)) throw new ApiError(401, "Valid bearer token required");
-      if ((url.pathname.startsWith("/admin/") || ["/episodes", "/episodes/review"].includes(url.pathname)) && !admin) throw new ApiError(403, "Caregiver/backend token required");
+      if ((url.pathname.startsWith("/admin/") || ["/episodes", "/episodes/review", "/plans", "/plans/cancel"].includes(url.pathname)) && !admin) throw new ApiError(403, "Caregiver/backend token required");
       const input = req.method === "POST" ? await body(req) : Object.fromEntries(url.searchParams);
       let result, status = 200;
       const route = `${req.method} ${url.pathname}`;
       switch (route) {
+        case "POST /plans": result = await triggers.create(input); status = 201; break;
+        case "POST /plans/cancel": result = await triggers.cancel(input); break;
+        case "POST /context-events": result = await triggers.context(input); status = 202; break;
+        case "GET /prompts": result = await triggers.poll(input); break;
+        case "POST /prompts/respond": result = await triggers.respond(input); break;
         case "POST /api/answer": result = await answers.answer(input); break;
         case "POST /admin/rehearsals/generate": result = await rehearsal.generate(input); break;
         case "GET /rehearsals": result = await rehearsal.getSet(input); break;

@@ -73,6 +73,14 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### T1 — Team-facing trigger contract
+
+- Checkpoint and exact time: Git metadata for the commit containing this entry (`npm run project:history`).
+- Added patient_id adapters for approved plan creation/cancellation, place check-ins, prompt polling and responses. Existing routes and worker policy retained. No new collections or migration.
+- Updated TEAM-HANDOFF.md with request examples, credentials, response shapes and polling guidance; corrected its outdated statement about the optional Gemini SDK.
+- Validation: 71 tests passed. Four new local tests cover context-to-prompt delivery, event deduplication, acknowledgement semantics, cancelled plans, stale input, patient scope and HTTP admin enforcement. No new live Atlas or Gemini verification claimed.
+- Backtrack: `f91c15c` is the preceding checkpoint.
+
 ### G1 — Gemini answer bridge
 
 - Recorded at 2026-10-23T22:17:17Z (24 October 03:47:17 IST; 23 October 23:17:17 London). Checkpoint: the commit containing this entry.

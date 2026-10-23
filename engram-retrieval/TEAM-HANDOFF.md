@@ -1,6 +1,43 @@
 # Team handoff: ingestion -> memory -> recall
 
-This adapter implements the team's `/episodes` and `/retrieve` naming while retaining all existing `/api` and `/admin` endpoints. No Gemini SDK or second conversational agent is added: the team can keep its current Gemini implementation.
+This adapter implements the team's `/episodes` and `/retrieve` naming while retaining all existing `/api` and `/admin` endpoints. The team can keep its current Gemini implementation. An optional backend Gemini bridge is documented in [GEMINI-BRIDGE.md](GEMINI-BRIDGE.md).
+
+## Proactive trigger integration
+
+The trigger adapter also accepts `patient_id`. It delegates to the existing worker and policy checks; Gemini access is not required. Plan creation/cancellation require the admin token. The other routes accept the companion token through your authenticated website backend.
+
+| Method and route | Purpose |
+| --- | --- |
+| `POST /plans` | Create an explicitly caregiver-approved visit or photo-album plan |
+| `POST /plans/cancel` | Cancel using `patient_id` and `plan_id` |
+| `POST /context-events` | Submit a fresh place check-in |
+| `GET /prompts?patient_id=margaret` | Poll currently deliverable prompts |
+| `POST /prompts/respond` | Respond using `patient_id`, `prompt_id`, `action` |
+
+Example context plan (replace timestamps with an appropriate current window):
+
+```json
+{
+  "id": "album_desk_001",
+  "patient_id": "margaret",
+  "status": "carer_verified",
+  "kind": "photo_album",
+  "trigger_type": "context",
+  "place_id": "desk",
+  "event_start": "2026-10-24T12:00:00Z",
+  "expires_at": "2026-10-24T13:00:00Z"
+}
+```
+
+For a time-based plan, use `trigger_type: "time"` and `due_at`. Visit plans require an existing scoped `person_id`. For a context plan, send a place event after `event_start`:
+
+```json
+{"patient_id":"margaret","event_id":"checkin_001","place_id":"desk","observed_at":"2026-10-24T12:01:00Z"}
+```
+
+Context observations must be within the last two minutes, with at most ten seconds of future clock skew. Repeated event IDs are deduplicated. With the worker running, poll every 2–5 seconds. Render `prompts[].message`; use `prompts[]._id` as `prompt_id`. Responses are wrapped as `{plan: ...}` or `{prompt: ...}`; plan/prompt objects retain existing internal field names. Context responses return `accepted`, `duplicate` and `processing`.
+
+Response actions: `acknowledged`, `snoozed`, `dismissed`, `self_reported_done`. Acknowledgement does not confirm activity completion. Snooze lasts one minute. Self-reported completion remains a self-report. Cancellation, expiry, quiet hours and cooldown can prevent delivery. A place check-in does not establish that the person ate, took medicine or completed another activity. These routes support only the existing visit/photo-album templates.
 
 ## Run and check
 
