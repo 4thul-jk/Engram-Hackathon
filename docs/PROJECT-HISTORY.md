@@ -73,6 +73,14 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### W1 — Website backend client
+
+- Checkpoint/time: Git metadata for the commit containing this entry (`npm run project:history`). Preceding checkpoint: `cd1de9c`.
+- Added server-side EngramClient for scoped retrieval, check-in, plans, cancellation and prompt responses; sequential cancellable prompt polling and a forwarding example for the teammate's existing website transport.
+- Documentation: WEBSITE-INTEGRATION.md. No game interface, patient authentication service, new collections or database migration introduced.
+- Validation: 76 tests passed. New tests cover field mapping, bound patient ID, polling deduplication/reappearance, abort, error handling and the real localhost HTTP workflow using an in-memory store. No new live Atlas/Gemini verification claimed.
+- Limits: website authentication and SSE/WebSocket delivery remain team integration work. Pending prompts can repeat across reconnections; website must reconcile IDs and expiry. New-arrival watcher does not notify of cancellation; use full polling snapshots for card reconciliation.
+
 ### T1 — Team-facing trigger contract
 
 - Checkpoint and exact time: Git metadata for the commit containing this entry (`npm run project:history`).
