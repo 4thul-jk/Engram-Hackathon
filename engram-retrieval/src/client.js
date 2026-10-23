@@ -57,6 +57,24 @@ export class EngramClient {
   requestHelp({ requestId, deviceId, reason = "user_requested_help" }, signal) {
     return this.request("/assistance/request", { patient_id: this.patientId, request_id: requestId, device_id: deviceId, reason }, signal);
   }
+  addDailyLog(log, signal) {
+    return this.request("/daily-logs", { ...log, patient_id: this.patientId }, signal);
+  }
+  dailyLogs({ day, activity } = {}, signal) {
+    const query = new URLSearchParams({ patient_id: this.patientId });
+    if (day) query.set("day", day);
+    if (activity) query.set("activity", activity);
+    return this.request(`/daily-logs?${query}`, undefined, signal);
+  }
+  addPersonalRecord(record, signal) {
+    return this.request("/personal-records", { ...record, patient_id: this.patientId }, signal);
+  }
+  personalRecords({ kind, personId } = {}, signal) {
+    const query = new URLSearchParams({ patient_id: this.patientId });
+    if (kind) query.set("kind", kind);
+    if (personId) query.set("person_id", personId);
+    return this.request(`/personal-records?${query}`, undefined, signal);
+  }
   // Sequential polling avoids overlapping requests. Failures surface to the
   // caller rather than being mistaken for an empty prompt list.
   async *watchPrompts({ intervalMs = 3000, signal } = {}) {

@@ -73,6 +73,14 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### L1 — Daily logs and personal information
+
+- Commit/time: Git metadata for the commit containing this entry. Previous checkpoint: `116f72c`.
+- Added daily_logs and personal_records with patient-scoped APIs, provenance, immutable idempotent IDs and caregiver review/withdrawal. Linked familiar-person cards use existing people records, private image references and admin-only contacts. Patient facts/preferences enter as drafts.
+- Daily views use configured timezone with DST-aware bounds; medication reports remain reports, not verified ingestion. No medication scheduling, face recognition or automatic clinical action introduced.
+- 88 local tests passed, covering provenance, daily bounds, contact access, review/idempotency, patient scope, HTTP permissions and client mapping. Atlas index provisioning prepared but not run for these new collections. Structured agent routing still requires team integration; /retrieve does not silently search the new collections.
+- Handoff: DAILY-AND-PERSONAL.md. New data is additive; revert code to backtrack, retaining collections for explicit retention decisions.
+
 ### C1 — Assigned scope completion: retrieval and triggers
 
 - Verified 2026-10-23T22:51:19.065Z. Previous checkpoint: `3df312d`; exact commit time available through project:history.

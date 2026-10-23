@@ -12,6 +12,7 @@ import { RehearsalService } from "./rehearsal.js";
 import { AnswerService } from "./answer.js";
 import { TriggerContract } from "./trigger-contract.js";
 import { AssistanceService } from "./assistance.js";
+import { LifeRecords } from "./life-records.js";
 
 function equal(a, b) {
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -36,6 +37,7 @@ export function makeServer(service, cfg) {
   const answers = new AnswerService(service, cfg);
   const triggers = new TriggerContract(service);
   const assistance = new AssistanceService(service);
+  const life = new LifeRecords(service);
   return createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "no-store");
@@ -74,6 +76,15 @@ export function makeServer(service, cfg) {
       let result, status = 200;
       const route = `${req.method} ${url.pathname}`;
       switch (route) {
+        case "POST /daily-logs": result = await life.addLog(input); status = result.created ? 201 : 200; break;
+        case "POST /admin/daily-logs": result = await life.addLog(input, true); status = result.created ? 201 : 200; break;
+        case "GET /daily-logs": result = await life.daily(input); break;
+        case "GET /admin/daily-logs": result = await life.daily(input, true); break;
+        case "POST /personal-records": result = await life.addPersonal(input); status = result.created ? 201 : 200; break;
+        case "POST /admin/personal-records": result = await life.addPersonal(input, true); status = result.created ? 201 : 200; break;
+        case "GET /personal-records": result = await life.personal(input); break;
+        case "GET /admin/personal-records": result = await life.personal(input, true); break;
+        case "POST /admin/life-records/review": result = await life.review(input); break;
         case "POST /admin/devices": result = await assistance.register(input); status = 201; break;
         case "POST /device-events": result = await assistance.telemetry(input); status = 202; break;
         case "GET /device-status": result = await assistance.status(input); break;

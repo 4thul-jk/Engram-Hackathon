@@ -25,6 +25,14 @@ test("client binds patient scope and maps integration requests", async () => {
   assert.match(requests[7].url, /device-status\?patient_id=margaret$/);
   assert.equal(JSON.parse(requests[8].body).reason, "user_requested_help");
   assert.equal(JSON.parse(requests[8].body).device_id, "watch1");
+  await c.addDailyLog({ patient_id: "other", id: "log1" });
+  await c.dailyLogs({ day: "2026-10-25", activity: "exercise" });
+  await c.addPersonalRecord({ id: "fact1" });
+  await c.personalRecords({ kind: "person", personId: "priya" });
+  assert.equal(JSON.parse(requests[9].body).patient_id, "margaret");
+  assert.match(requests[10].url, /activity=exercise/);
+  assert.equal(JSON.parse(requests[11].body).patient_id, "margaret");
+  assert.match(requests[12].url, /person_id=priya/);
 });
 test("poller emits once while visible and again after disappearance", async () => {
   const batches = [[{ _id: "p1" }], [{ _id: "p1" }], [], [{ _id: "p1" }]];
