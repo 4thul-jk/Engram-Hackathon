@@ -13,7 +13,8 @@
     "demo:seed": "node scripts/seed.js",
     "demo:contract": "node scripts/contract-demo.js",
     "memory:nightly": "node scripts/nightly.js",
-    "demo:memory": "node scripts/memory-demo.js"
+    "demo:memory": "node scripts/memory-demo.js",
+    "project:history": "node scripts/history.js"
   },
   "dependencies": { "mongodb": "^6.20.0" }
 }

@@ -37,6 +37,9 @@ The latest local verification passed **59 tests**. The contract demo checks inge
 
 ## Connect the team
 
+- [Build timeline and verified commit times](docs/PROJECT-HISTORY.md)
+- [How ingestion, retrieval, triggers and practice work](docs/PROCESS.md)
+- [Backtracking and recovery runbook](docs/BACKTRACKING.md)
 - [Complete setup, configuration and existing trigger APIs](engram-retrieval/README.md)
 - [Team API contract and example JSON](engram-retrieval/TEAM-HANDOFF.md)
 - [Native Atlas retrieval setup](engram-retrieval/NATIVE-ATLAS.md)

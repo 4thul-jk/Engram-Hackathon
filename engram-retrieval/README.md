@@ -2,6 +2,8 @@
 
 Your standalone component for MongoDB memory retrieval, evidence delivery to the team's Gemini backend, and rule-based proactive prompts. Node.js 20.18+; JavaScript ES modules.
 
+**Project traceability:** [Build history](../docs/PROJECT-HISTORY.md), [process walkthrough](../docs/PROCESS.md), and [backtracking runbook](../docs/BACKTRACKING.md). Run `npm run project:history` in the tracked checkout to read exact Git checkpoint times in IST and London time.
+
 **Team contract:** [TEAM-HANDOFF.md](TEAM-HANDOFF.md) documents `POST /episodes`, caregiver review, and `POST /retrieve` using `patient_id` and the team's episode fields. Run `npm run demo:contract` against the running service to check this integration. Existing endpoints below remain supported.
 
 **Memory scheduling:** [MEMORY-MODEL.md](MEMORY-MODEL.md) documents the experimental stability model, maximum-three daily review, practice attempts and nightly invocation. Run `npm run demo:memory` against a fresh local service to exercise the loop. This is a scheduling heuristic, not a clinical assessment.
