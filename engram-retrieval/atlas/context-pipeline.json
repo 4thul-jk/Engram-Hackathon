@@ -1,0 +1,40 @@
+[
+  {
+    "$source": {
+      "connectionName": "engramAtlas",
+      "db": "engram",
+      "coll": "context_events",
+      "fullDocument": "updateLookup"
+    }
+  },
+  { "$match": { "operationType": "insert", "fullDocument.type": "place_check_in" } },
+  { "$replaceRoot": { "newRoot": "$fullDocument" } },
+  {
+    "$lookup": {
+      "from": { "connectionName": "engramAtlas", "db": "engram", "coll": "plans" },
+      "let": { "household": "$householdId", "subject": "$subjectId", "place": "$placeId" },
+      "pipeline": [
+        { "$match": { "$expr": { "$and": [
+          { "$eq": ["$householdId", "$$household"] },
+          { "$eq": ["$subjectId", "$$subject"] },
+          { "$eq": ["$placeId", "$$place"] },
+          { "$eq": ["$triggerType", "context"] },
+          { "$eq": ["$reviewStatus", "approved"] },
+          { "$eq": ["$eventStatus", "planned"] }
+        ] } } }
+      ],
+      "as": "matchingPlans"
+    }
+  },
+  { "$match": { "matchingPlans.0": { "$exists": true } } },
+  { "$set": { "status": "pending" } },
+  { "$unset": "matchingPlans" },
+  {
+    "$merge": {
+      "into": { "connectionName": "engramAtlas", "db": "engram", "coll": "assistance_candidates" },
+      "on": "_id",
+      "whenMatched": "keepExisting",
+      "whenNotMatched": "insert"
+    }
+  }
+]
