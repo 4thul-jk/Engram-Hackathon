@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { ApiError, text, id, ids, date, choice, range, scopeFor, unitNumber } from "./validation.js";
 import { episodeFilter, fuse, rerank } from "./search.js";
+import { STREAM_PIPELINE_VERSION } from "./stream-pipeline.js";
 
 const uid = prefix => `${prefix}_${randomUUID()}`;
 const dateNow = () => new Date();
@@ -243,7 +244,8 @@ export class EngramService {
         ...scope, reviewStatus: "approved", eventStatus: "planned", expiresAt: { $gt: now }
       }, { createdAt: 1 }, 1000);
       for (const plan of plans) if (plan.triggerType === "time") await this.ensureJob(plan);
-      const candidates = await this.store.list("assistance_candidates", { ...scope, status: "pending" }, { observedAt: 1 }, 50);
+        const candidates = await this.store.list("assistance_candidates", { ...scope, status: "pending",
+          ...(this.cfg.contextProcessing === "atlas" ? { processingPath: "atlas_stream_processing", pipelineVersion: STREAM_PIPELINE_VERSION } : {}) }, { observedAt: 1 }, 50);
       for (const candidate of candidates) {
         // Fetch original event as authoritative; never trust a forged stream candidate.
         const event = await this.store.one("context_events", scoped(scope, candidate._id));

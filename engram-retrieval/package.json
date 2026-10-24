@@ -11,6 +11,8 @@
     "worker": "node src/worker.js",
     "test": "node --test",
     "verify:core": "node scripts/verify-core.js",
+    "stream:prepare": "node scripts/stream-prepare.js",
+    "stream:verify": "node scripts/stream-verify.js",
     "atlas:indexes": "node scripts/indexes.js",
     "atlas:check": "node scripts/atlas-check.js",
     "demo:seed": "node scripts/seed.js",

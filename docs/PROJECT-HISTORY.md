@@ -73,6 +73,15 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### S1 — Stream Processing pipeline and verification tooling
+
+- Checkpoint/time: Git metadata for the commit containing this entry. Previous checkpoint `5464b75`.
+- Corrected source config syntax; added pipeline generator, scoped/time-filtered lookup, replay-safe merge and versioned processing-path markers. Atlas backend mode accepts the new marked output contract only; local mode unchanged.
+- Commands: stream:prepare succeeded; npm test passed 99 tests after updating the existing simulated stream fixture to the versioned contract. Pipeline execution itself is not simulated as a claimed Atlas feature.
+- Live stream:verify run stream_0bdeb733ba9e4983a93522070f258981 failed: no candidate arrived within its bounded polling attempts. Fictional source/plan fixtures retained. User confirmed workspace/connection have not been created. No workspace-management credentials or Atlas CLI available in environment. Stream Processing is NOT live verified.
+- Remaining setup: create workspace, add engramAtlas connection, deploy/start EngramContext using generated JSON, rerun stream:verify. Leave active app CONTEXT_PROCESSING=local until verification passes. Exact steps and references: STREAM-PROCESSING.md.
+- No paid workspace, permissions, main config or existing processor changed. Backtrack by reverting this commit; prior stream templates would require corresponding backend contract restoration.
+
 ### U1 — Unified memory-context API
 
 - Verified 2026-10-24T00:03:35.156Z; commit/time via Git for the commit containing this entry. Previous checkpoint `61c9d2f`.

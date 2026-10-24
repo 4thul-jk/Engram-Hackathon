@@ -7,6 +7,7 @@ import { seedDemo } from "../src/fixtures.js";
 import { fuse, textPipeline, vectorPipeline } from "../src/search.js";
 import { makeServer } from "../src/server.js";
 import { validateCitations } from "../src/grounding.js";
+import { STREAM_PIPELINE_VERSION } from "../src/stream-pipeline.js";
 
 function fixture(extra = {}) {
   let time = new Date("2026-10-24T12:00:00Z");
@@ -104,12 +105,12 @@ test("stream candidates require a corresponding original context event", async (
   await f.store.insert("assistance_candidates", { _id: "forged", householdId: f.cfg.householdId, subjectId: "margaret", status: "pending", placeId: "desk", observedAt: f.now() });
   await f.service.tick(); assert.equal((await f.store.list("prompts")).length, 0);
 });
-test("Atlas context mode waits for a real stream candidate", async () => {
+test("Atlas context mode waits for a marked candidate (simulated fixture)", async () => {
   const f = fixture({ contextProcessing: "atlas" }); await seedDemo(f.service);
   await f.service.context({ subjectId: "margaret", eventId: "desk_1", placeId: "desk", observedAt: f.now().toISOString() });
   await f.service.tick(); assert.equal((await f.store.list("prompts")).length, 0);
   const event = await f.store.one("context_events", { _id: "desk_1" });
-  await f.store.insert("assistance_candidates", { ...event, status: "pending" });
+  await f.store.insert("assistance_candidates", { ...event, status: "pending", processingPath: "atlas_stream_processing", pipelineVersion: STREAM_PIPELINE_VERSION });
   await f.service.tick(); assert.equal((await f.service.prompts("margaret")).length, 1);
 });
 test("snooze hides prompt; acknowledgement doesn't complete plan", async () => {

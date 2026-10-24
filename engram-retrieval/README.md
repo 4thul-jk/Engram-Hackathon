@@ -2,6 +2,8 @@
 
 Your standalone component for MongoDB memory retrieval, evidence delivery to the team's Gemini backend, and rule-based proactive prompts. Node.js 20.18+; JavaScript ES modules.
 
+**Stream Processing:** [STREAM-PROCESSING.md](STREAM-PROCESSING.md) covers pipeline preparation, Atlas deployment and a no-fallback live verification command. Do not claim it as live until that verification succeeds.
+
 **Unified agent context:** [MEMORY-CONTEXT.md](MEMORY-CONTEXT.md) documents `POST /memory-context` for approved episodes, daily reports, personal records and scheduled plans in one typed response.
 
 **Daily logs and familiar people:** [DAILY-AND-PERSONAL.md](DAILY-AND-PERSONAL.md) documents daily reports, family photo/contact cards and patient-provided facts/preferences with caregiver review.
