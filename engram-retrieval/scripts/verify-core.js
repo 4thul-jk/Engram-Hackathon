@@ -5,6 +5,8 @@ import { createStore } from "../src/store.js";
 import { EngramService } from "../src/service.js";
 import { TeamContract } from "../src/team-contract.js";
 import { TriggerContract } from "../src/trigger-contract.js";
+import { LifeRecords } from "../src/life-records.js";
+import { MemoryContext } from "../src/memory-context.js";
 
 // Fictional fixtures in a unique household, never the active patient household.
 // Atlas fixtures remain for review; no automatic deletion is performed.
@@ -35,6 +37,17 @@ try {
   assert.ok(result.episodes.some(e => e.id === episode.id));
   assert.equal(result.retrieval_complete, true); pass("approved_memory_with_source");
   assert.equal((await team.ingest(episode)).created, false); pass("ingestion_retry_deduplicated");
+  const life = new LifeRecords(service);
+  await life.addLog({ patient_id: "fixture", id: `${runId}_log`, activity: "exercise", label: "Fictional walk", outcome: "reported_done", occurred_at: now.toISOString(), original_text: "FICTIONAL REPORT: I walked in the garden." });
+  await life.review({ patient_id: "fixture", collection: "daily_logs", id: `${runId}_log`, status: "approved" });
+  await life.addPersonal({ patient_id: "fixture", id: `${runId}_fact`, kind: "preference", title: "Fictional tea preference", original_text: "FICTIONAL REPORT: I like tea without sugar." });
+  await life.review({ patient_id: "fixture", collection: "personal_records", id: `${runId}_fact`, status: "approved" });
+  const combined = await new MemoryContext(service).retrieve({ patient_id: "fixture", query: "brass compass" });
+  assert.equal(combined.status, "context_ready");
+  assert.equal(combined.sections.episodes.records.length, 1);
+  assert.equal(combined.sections.daily_logs.records[0].sourceType, "user_report");
+  assert.equal(combined.sections.personal_records.records[0].kind, "preference");
+  assert.equal(combined.sections.plans.status, "empty"); pass("unified_context_preserves_typed_records");
   await team.review({ patient_id: "fixture", id: episode.id, status: "auto" });
   assert.equal((await team.retrieve(query)).episodes.length, 0); pass("withdrawn_approval_excluded");
   await triggers.create({ patient_id: "fixture", id: `${runId}_time`, status: "carer_verified", kind: "photo_album", trigger_type: "time",

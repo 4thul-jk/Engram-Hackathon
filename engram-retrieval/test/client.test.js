@@ -33,6 +33,9 @@ test("client binds patient scope and maps integration requests", async () => {
   assert.match(requests[10].url, /activity=exercise/);
   assert.equal(JSON.parse(requests[11].body).patient_id, "margaret");
   assert.match(requests[12].url, /person_id=priya/);
+  await c.memoryContext({ patient_id: "other", query: "Who visited?", include: ["episodes"] });
+  assert.equal(JSON.parse(requests[13].body).patient_id, "margaret");
+  assert.match(requests[13].url, /memory-context$/);
 });
 test("poller emits once while visible and again after disappearance", async () => {
   const batches = [[{ _id: "p1" }], [{ _id: "p1" }], [], [{ _id: "p1" }]];

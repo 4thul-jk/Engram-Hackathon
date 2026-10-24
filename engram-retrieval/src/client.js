@@ -35,6 +35,9 @@ export class EngramClient {
   retrieve({ query, time_range, mode = "hybrid", min_confidence } = {}, signal) {
     return this.request("/retrieve", { patient_id: this.patientId, query, time_range, mode, min_confidence }, signal);
   }
+  memoryContext(options, signal) {
+    return this.request("/memory-context", { ...options, patient_id: this.patientId }, signal);
+  }
   checkIn({ eventId, placeId, observedAt = new Date().toISOString() }, signal) {
     return this.request("/context-events", { patient_id: this.patientId, event_id: eventId, place_id: placeId, observed_at: observedAt }, signal);
   }

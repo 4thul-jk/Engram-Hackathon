@@ -13,6 +13,7 @@ import { AnswerService } from "./answer.js";
 import { TriggerContract } from "./trigger-contract.js";
 import { AssistanceService } from "./assistance.js";
 import { LifeRecords } from "./life-records.js";
+import { MemoryContext } from "./memory-context.js";
 
 function equal(a, b) {
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -38,6 +39,7 @@ export function makeServer(service, cfg) {
   const triggers = new TriggerContract(service);
   const assistance = new AssistanceService(service);
   const life = new LifeRecords(service);
+  const memoryContext = new MemoryContext(service);
   return createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "no-store");
@@ -76,6 +78,7 @@ export function makeServer(service, cfg) {
       let result, status = 200;
       const route = `${req.method} ${url.pathname}`;
       switch (route) {
+        case "POST /memory-context": result = await memoryContext.retrieve(input); break;
         case "POST /daily-logs": result = await life.addLog(input); status = result.created ? 201 : 200; break;
         case "POST /admin/daily-logs": result = await life.addLog(input, true); status = result.created ? 201 : 200; break;
         case "GET /daily-logs": result = await life.daily(input); break;

@@ -73,6 +73,14 @@ The earlier upload ZIP is a **historical snapshot**. It is not regenerated after
 
 ## Record future changes
 
+### U1 — Unified memory-context API
+
+- Verified 2026-10-24T00:03:35.156Z; commit/time via Git for the commit containing this entry. Previous checkpoint `61c9d2f`.
+- Added POST /memory-context, client method, typed citation/evidence helpers, explicit section filters and partial/unavailable semantics. Caregiver contacts excluded; reports and intentions retain provenance.
+- 95 automated tests passed. Expanded verify:core passed 10 checks on live Atlas in fictional household verify_2f7d6737fab649919c6ba784946f1029. No Gemini call or new index provisioning performed. HTTP checked separately in local tests.
+- Handoff MEMORY-CONTEXT.md. Old /retrieve and /api/answer behaviour retained. Structured data is not silently promoted to event truth; snapshots can change after read.
+- Scheduler, review queue and pushed delivery remain subsequent steps; device and game development remain parked.
+
 ### L1 — Daily logs and personal information
 
 - Commit/time: Git metadata for the commit containing this entry. Previous checkpoint: `116f72c`.

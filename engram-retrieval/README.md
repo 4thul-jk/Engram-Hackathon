@@ -2,6 +2,8 @@
 
 Your standalone component for MongoDB memory retrieval, evidence delivery to the team's Gemini backend, and rule-based proactive prompts. Node.js 20.18+; JavaScript ES modules.
 
+**Unified agent context:** [MEMORY-CONTEXT.md](MEMORY-CONTEXT.md) documents `POST /memory-context` for approved episodes, daily reports, personal records and scheduled plans in one typed response.
+
 **Daily logs and familiar people:** [DAILY-AND-PERSONAL.md](DAILY-AND-PERSONAL.md) documents daily reports, family photo/contact cards and patient-provided facts/preferences with caregiver review.
 
 **Assigned-part completion and live acceptance results:** [YOUR-PART-COMPLETE.md](YOUR-PART-COMPLETE.md). Re-run `npm run verify:core` locally or add `-- --atlas` for isolated fictional Atlas checks.
